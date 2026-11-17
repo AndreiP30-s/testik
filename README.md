@@ -51,6 +51,23 @@ Docker Compose читает из `.env` параметры `DB_PORT` и `DB_PASS
 SQL из `db/` создаёт таблицы и справочники при первом запуске с пустым volume.
 Hibernate проверяет схему через `ddl-auto=validate`.
 
+## База данных
+
+Таблицы:
+
+- `brand`, `category` — бренды и категории товаров;
+- `specification`, `category_specification` — характеристики и их связь с категориями;
+- `product`, `product_specification`, `rear_camera` — товары, значения характеристик и камеры;
+- `app_user` — пользователи;
+- `discount_state`, `discount_backup` — состояние скидки и исходные цены;
+- `sales_order`, `order_item` — заказы и их позиции.
+
+Таблицы заказов есть в схеме, но API их не обслуживает.
+
+ER-диаграмма из pgAdmin:
+
+![Схема базы данных в pgAdmin](images/database-schema.png)
+
 ## API
 
 В Swagger есть формы для добавления смартфона, планшета, ноутбука и наушников.
