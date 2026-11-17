@@ -15,7 +15,7 @@ import java.util.List;
         info =
                 @Info(
                         title = "TechStore REST API",
-                        version = "ЛР2",
+                        version = "1.0.0",
                         description =
                                 "**Добавить товар:** откройте «1. Товары», выберите «Добавить"
                                     + " смартфон» или другую категорию, нажмите Try it out,"

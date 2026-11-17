@@ -11,7 +11,7 @@
     <artifactId>tech-store</artifactId>
     <version>1.0.0</version>
     <name>Tech Store</name>
-    <description>Лабораторная работа №2 — магазин техники</description>
+    <description>REST-сервис магазина техники</description>
     <properties>
         <java.version>17</java.version>
     </properties>
