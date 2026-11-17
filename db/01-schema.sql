@@ -1,14 +1,14 @@
 BEGIN;
 
 -- ---------------------------------------------------------------
--- brand
+-- Бренды
 -- ---------------------------------------------------------------
 CREATE TABLE brand (
     name varchar(100) PRIMARY KEY CHECK (btrim(name) <> '')
 );
 
 -- ---------------------------------------------------------------
--- category
+-- Категории
 -- ---------------------------------------------------------------
 CREATE TABLE category (
     code varchar(20) PRIMARY KEY,
@@ -23,7 +23,7 @@ CREATE TABLE category (
 );
 
 -- ---------------------------------------------------------------
--- specification
+-- Характеристики
 -- ---------------------------------------------------------------
 CREATE TABLE specification (
     name       varchar(100) PRIMARY KEY CHECK (btrim(name) <> ''),
@@ -37,7 +37,7 @@ CREATE TABLE specification (
 );
 
 -- ---------------------------------------------------------------
--- category_specification
+-- Характеристики категорий
 -- ---------------------------------------------------------------
 CREATE TABLE category_specification (
     category_code      varchar(20)  NOT NULL REFERENCES category (code),
@@ -47,7 +47,7 @@ CREATE TABLE category_specification (
 );
 
 -- ---------------------------------------------------------------
--- product
+-- Товары
 -- ---------------------------------------------------------------
 CREATE TABLE product (
     article       integer      PRIMARY KEY CHECK (article > 0),
@@ -61,7 +61,7 @@ CREATE TABLE product (
 );
 
 -- ---------------------------------------------------------------
--- product_specification
+-- Значения характеристик товаров
 -- ---------------------------------------------------------------
 CREATE TABLE product_specification (
     product_article    integer      NOT NULL REFERENCES product (article),
@@ -72,7 +72,7 @@ CREATE TABLE product_specification (
 );
 
 -- ---------------------------------------------------------------
--- rear_camera
+-- Модули задних камер
 -- ---------------------------------------------------------------
 CREATE TABLE rear_camera (
     product_article integer      NOT NULL REFERENCES product (article),
@@ -89,7 +89,7 @@ CREATE TABLE rear_camera (
 );
 
 -- ---------------------------------------------------------------
--- app_user
+-- Пользователи
 -- ---------------------------------------------------------------
 CREATE TABLE app_user (
     email         varchar(254) PRIMARY KEY,
@@ -105,7 +105,7 @@ CREATE TABLE app_user (
 );
 
 -- ---------------------------------------------------------------
--- sales_order
+-- Заказы
 -- ---------------------------------------------------------------
 CREATE TABLE sales_order (
     order_number    varchar(30)  PRIMARY KEY CHECK (btrim(order_number) <> ''),
@@ -135,7 +135,7 @@ CREATE TABLE sales_order (
 );
 
 -- ---------------------------------------------------------------
--- order_item
+-- Позиции заказов
 -- ---------------------------------------------------------------
 CREATE TABLE order_item (
     order_number    varchar(30)  NOT NULL REFERENCES sales_order (order_number),
@@ -150,7 +150,7 @@ CREATE TABLE order_item (
 );
 
 -- =======================================================
--- Table comments
+-- Комментарии таблиц
 -- =======================================================
 
 COMMENT ON TABLE brand IS 'Бренды товаров';
@@ -165,7 +165,7 @@ COMMENT ON TABLE sales_order IS 'Заказы покупателей';
 COMMENT ON TABLE order_item IS 'Позиции заказов';
 
 -- =======================================================
--- Column comments
+-- Комментарии столбцов
 -- =======================================================
 
 COMMENT ON COLUMN brand.name IS 'Название бренда';

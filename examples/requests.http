@@ -1,117 +1,117 @@
-# IntelliJ IDEA HTTP Client. Run with the application started and SQL scripts applied.
+# Запросы для HTTP-клиента IntelliJ IDEA. Приложение и база должны быть запущены.
 @baseUrl = http://localhost:8081
 @article = 100001
 
-### Categories
+### Категории
 GET {{baseUrl}}/api/categories
 
-### Brands
+### Бренды
 GET {{baseUrl}}/api/brands
 
-### Specifications
+### Характеристики
 GET {{baseUrl}}/api/specifications
 
-### Create smartphone (copy article from response into @article)
+### Создание смартфона (записать артикул из ответа в @article)
 POST {{baseUrl}}/api/products
 Content-Type: application/json
 
 < ./smartphone.json
 
-### Read product
+### Получение товара
 GET {{baseUrl}}/api/products/{{article}}
 
-### All filters can be combined
+### Поиск с несколькими фильтрами
 GET {{baseUrl}}/api/products?name=Demo&brand=DemoBrand&category=SMARTPHONE&minPrice=10000&maxPrice=50000&available=true&page=0&size=10
 
-### Update: full replacement, including specifications and cameras
+### Полное обновление товара, характеристик и камер
 PUT {{baseUrl}}/api/products/{{article}}
 Content-Type: application/json
 
 < ./smartphone.json
 
-### Create tablet
+### Создание планшета
 POST {{baseUrl}}/api/products
 Content-Type: application/json
 
 < ./tablet.json
 
-### Create laptop
+### Создание ноутбука
 POST {{baseUrl}}/api/products
 Content-Type: application/json
 
 < ./laptop.json
 
-### Create headphones
+### Создание наушников
 POST {{baseUrl}}/api/products
 Content-Type: application/json
 
 < ./headphones.json
 
-### Create user
+### Создание пользователя
 POST {{baseUrl}}/api/users
 Content-Type: application/json
 
 < ./user.json
 
-### Read user (no password/hash in response)
+### Получение пользователя без пароля и хеша
 GET {{baseUrl}}/api/users/customer@example.com
 
-### Filter users by role
+### Поиск пользователей по роли
 GET {{baseUrl}}/api/users?role=CUSTOMER
 
-### Update user; email cannot be changed
+### Изменение пользователя; email остаётся прежним
 PUT {{baseUrl}}/api/users/customer@example.com
 Content-Type: application/json
 
 {"name":"Новое имя","role":"MANAGER"}
 
-### Create brand
+### Создание бренда
 POST {{baseUrl}}/api/brands
 Content-Type: application/json
 
 {"name":"NewBrand"}
 
-### Rename unused brand
+### Переименование неиспользуемого бренда
 PUT {{baseUrl}}/api/brands/NewBrand
 Content-Type: application/json
 
 {"name":"RenamedBrand"}
 
-### Delete unused brand
+### Удаление неиспользуемого бренда
 DELETE {{baseUrl}}/api/brands/RenamedBrand
 
-### Create an additional specification
+### Создание дополнительной характеристики
 POST {{baseUrl}}/api/specifications
 Content-Type: application/json
 
 {"name":"color","valueType":"TEXT","unit":null}
 
-### Allow color for smartphones
+### Назначение характеристики color смартфонам
 PUT {{baseUrl}}/api/categories/SMARTPHONE/specifications/color
 
-### List permitted characteristics
+### Разрешённые характеристики категории
 GET {{baseUrl}}/api/categories/SMARTPHONE/specifications
 
-### Discount: updates all products. Catalogue writes are blocked until cancellation.
+### Применение скидки ко всем товарам. До отмены изменение каталога заблокировано.
 POST {{baseUrl}}/api/discount
 Content-Type: application/json
 
 {"percent":10,"threads":3}
 
-### Discount status survives application restart
+### Состояние скидки сохраняется после перезапуска
 GET {{baseUrl}}/api/discount
 
-### Restore original prices
+### Восстановление исходных цен
 DELETE {{baseUrl}}/api/discount
 
-### Invalid range -> 400
+### Некорректный диапазон цен — 400
 GET {{baseUrl}}/api/products?minPrice=100&maxPrice=10
 
-### Missing product -> 404
+### Несуществующий товар — 404
 GET {{baseUrl}}/api/products/2147483647
 
-### Delete product and its characteristics/cameras
+### Удаление товара, его характеристик и камер
 DELETE {{baseUrl}}/api/products/{{article}}
 
-### Delete user
+### Удаление пользователя
 DELETE {{baseUrl}}/api/users/customer@example.com
