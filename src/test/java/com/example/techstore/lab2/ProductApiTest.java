@@ -236,4 +236,14 @@ class ProductApiTest extends DatabaseFreeTest {
         assertTrue(
                 context.getBeansOfType(jakarta.persistence.EntityManagerFactory.class).isEmpty());
     }
+
+    @Test
+    void rejectsNullOptionalCharacteristicAtHttpBoundary() throws Exception {
+        String payload =
+                JSON.replace("\"wireless\":\"true\"", "\"wireless\":\"true\",\"color\":null");
+        mvc.perform(post("/api/products").contentType("application/json").content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.details").isArray());
+        verify(products, never()).saveAndFlush(any());
+    }
 }

@@ -48,6 +48,13 @@ public class ReferenceServiceImpl implements ReferenceService {
         return brands.findAll().stream().map(b -> new BrandDto(b.getName())).toList();
     }
 
+    @Override
+    public BrandDto brand(String name) {
+        return brands.findById(name)
+                .map(brand -> new BrandDto(brand.getName()))
+                .orElseThrow(() -> new NotFoundException("Бренд не найден: " + name));
+    }
+
     @Transactional
     @Override
     public BrandDto createBrand(BrandDto request) {

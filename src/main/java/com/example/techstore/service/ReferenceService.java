@@ -10,6 +10,8 @@ import java.util.List;
 public interface ReferenceService {
     List<BrandDto> brands();
 
+    BrandDto brand(String name);
+
     BrandDto createBrand(BrandDto request);
 
     BrandDto renameBrand(String old, BrandDto request);

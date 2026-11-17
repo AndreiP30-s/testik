@@ -246,4 +246,38 @@ class ProductFormsApiTest extends DatabaseFreeTest {
         product.getRearCameras().add(new RearCamera(product, "WIDE", new BigDecimal("50"), 1));
         return product;
     }
+
+    @Test
+    void rejectsNegativePriceAndOversizedNameInPatch() throws Exception {
+        mvc.perform(
+                        patch("/api/products/73/details")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .param("price", "-5"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(
+                        patch("/api/products/73/details")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .param("name", "x".repeat(201)))
+                .andExpect(status().isBadRequest());
+        mvc.perform(
+                        patch("/api/products/73/details")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .param("name", "   "))
+                .andExpect(status().isBadRequest());
+        verify(products, never()).flush();
+    }
+
+    @Test
+    void emptyNameWithPriceLeavesExistingNameUnchanged() throws Exception {
+        Product product = phone();
+        when(products.findById(73)).thenReturn(Optional.of(product));
+        mvc.perform(
+                        patch("/api/products/73/details")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .param("name", "")
+                                .param("price", "150"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Phone"))
+                .andExpect(jsonPath("$.price").value(150));
+    }
 }

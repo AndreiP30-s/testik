@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.example.techstore.model.catalog.Brand;
 import com.example.techstore.model.catalog.CategoryCharacteristic;
 import com.example.techstore.model.catalog.Characteristic;
 
@@ -83,5 +84,14 @@ class ReferenceApiTest extends DatabaseFreeTest {
                                 .contentType("application/json")
                                 .content("{\"name\":\"ramGb\",\"valueType\":\"TEXT\"}"))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void readsBrandByNameAndReturns404ForMissingBrand() throws Exception {
+        when(brands.findById("DemoBrand")).thenReturn(Optional.of(new Brand("DemoBrand")));
+        mvc.perform(get("/api/brands/DemoBrand"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("DemoBrand"));
+        mvc.perform(get("/api/brands/Missing")).andExpect(status().isNotFound());
     }
 }

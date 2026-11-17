@@ -63,11 +63,11 @@ public class DiscountServiceImpl implements DiscountService {
         List<PriceQuote> prices = calculator.calculate(snapshot, percent, threads);
         if (prices.stream().anyMatch(p -> p.discountedPrice().signum() <= 0))
             throw new IllegalArgumentException("После скидки цена должна быть больше нуля");
-        Map<Long, BigDecimal> byArticle = new HashMap<>();
+        Map<Integer, BigDecimal> byArticle = new HashMap<>();
         for (PriceQuote quote : prices) byArticle.put(quote.article(), quote.discountedPrice());
         for (Product product : entities) {
             backups.save(new DiscountBackup(product.getArticle(), product.getPrice()));
-            product.setPrice(byArticle.get(product.getArticle().longValue()));
+            product.setPrice(byArticle.get(product.getArticle()));
         }
         state.setActive(true);
         products.flush();

@@ -39,6 +39,12 @@ public class ReferenceController {
         return service.brands();
     }
 
+    @GetMapping("/brands/{name}")
+    @Operation(summary = "Найти бренд по имени")
+    public BrandDto brand(@PathVariable String name) {
+        return service.brand(name);
+    }
+
     @PostMapping("/brands")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Создать бренд")

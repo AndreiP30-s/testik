@@ -14,6 +14,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Checks category permissions and types from the characteristic catalogue, including custom fields.
+ */
 @Component
 public class CharacteristicValidator {
     private final CategoryCharacteristicRepository links;
@@ -30,6 +33,13 @@ public class CharacteristicValidator {
     }
 
     public void validate(ProductRequest request) {
+        if (request.specifications() == null)
+            throw new IllegalArgumentException("Характеристики обязательны");
+        for (Map.Entry<String, String> entry : request.specifications().entrySet()) {
+            if (entry.getValue() == null || entry.getValue().isBlank())
+                throw new IllegalArgumentException(
+                        "Пустое значение характеристики: " + entry.getKey());
+        }
         rules.validate(request);
         Set<String> allowed = new HashSet<>();
         for (CategoryCharacteristic link : links.findByIdCategoryCode(request.category().name()))
