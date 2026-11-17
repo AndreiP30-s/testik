@@ -102,4 +102,4 @@ HTTP-клиентов и входа в систему нет.
 ## Тесты
 
 `make test` запускает тесты JUnit, Mockito и MockMvc с `@SpringBootTest` без подключения к БД.
-GitHub Actions и GitLab CI выполняют Maven verify на Java 17.
+GitHub Actions выполняет Maven verify на Java 17.
