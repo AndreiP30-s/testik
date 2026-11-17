@@ -50,7 +50,6 @@ Docker Compose читает из `.env` параметры `DB_PORT` и `DB_PASS
 
 SQL из `db/` создаёт таблицы и справочники при первом запуске с пустым volume.
 Hibernate проверяет схему через `ddl-auto=validate`.
-[Таблицы и связи](docs/schema.md).
 
 ## API
 
