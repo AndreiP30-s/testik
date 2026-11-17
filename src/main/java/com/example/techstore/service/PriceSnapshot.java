@@ -2,5 +2,5 @@ package com.example.techstore.service;
 
 import java.math.BigDecimal;
 
-/** Immutable values passed to workers; never contains JPA entities. */
+/** Неизменяемые данные для расчёта цены в рабочих потоках. */
 public record PriceSnapshot(Integer article, String name, BigDecimal price) {}

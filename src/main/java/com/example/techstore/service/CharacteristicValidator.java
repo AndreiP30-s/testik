@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Checks category permissions and types from the characteristic catalogue, including custom fields.
+ * Проверяет допустимость характеристик для категории и типы значений по справочнику.
  */
 @Component
 public class CharacteristicValidator {

@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * Flat form inputs. They are translated into the same validated ProductRequest used by JSON
- * clients.
+ * Поля форм добавления и изменения товаров. Преобразуются в ProductRequest
+ * с общими проверками для форм и JSON-запросов.
  */
 public final class ProductForms {
     private ProductForms() {}

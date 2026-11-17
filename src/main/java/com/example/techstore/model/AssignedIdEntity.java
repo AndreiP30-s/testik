@@ -7,7 +7,7 @@ import jakarta.persistence.Transient;
 
 import org.springframework.data.domain.Persistable;
 
-/** Ensures that a new object with a natural key is inserted, never merged into an existing row. */
+/** Определяет новую сущность с естественным ключом для вставки в базу данных. */
 @MappedSuperclass
 public abstract class AssignedIdEntity implements Persistable<String> {
     @Transient private boolean newEntity = true;

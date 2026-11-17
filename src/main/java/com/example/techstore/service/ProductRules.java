@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/** Category-specific rules formerly enforced by Smartphone/Laptop/etc constructors. */
+/** Проверки обязательных характеристик по категориям. */
 @Component
 public class ProductRules {
     public static Set<String> required(ProductCategory category) {

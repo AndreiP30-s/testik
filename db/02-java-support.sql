@@ -1,5 +1,5 @@
 BEGIN;
--- Supplement to the original schema. Execute once after 01-schema.sql.
+-- Последовательность артикулов и таблицы скидок. Выполняется после 01-schema.sql.
 CREATE SEQUENCE product_article_seq AS integer START WITH 100001 INCREMENT BY 1;
 SELECT setval('product_article_seq', GREATEST(100001, COALESCE((SELECT MAX(article)::bigint + 1 FROM product),100001)), false);
 ALTER TABLE product ALTER COLUMN article SET DEFAULT nextval('product_article_seq');

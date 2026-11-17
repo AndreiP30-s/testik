@@ -84,7 +84,8 @@ public class ProductServiceImpl implements ProductService {
         lockDiscounts();
         Product product = new Product();
         validateAndSet(product, request);
-        products.saveAndFlush(product); // Obtain article before creating composite child keys.
+        // Получаем артикул для составных ключей характеристик и камер.
+        products.saveAndFlush(product);
         addChildren(product, request);
         products.flush();
         return ProductResponse.from(product);
@@ -128,7 +129,8 @@ public class ProductServiceImpl implements ProductService {
         validateAndSet(product, request);
         product.getSpecifications().clear();
         product.getRearCameras().clear();
-        products.flush(); // Delete old composite keys before reinserting values with the same keys.
+        // Удаляем старые записи перед вставкой новых с теми же составными ключами.
+        products.flush();
         addChildren(product, request);
         products.flush();
         return ProductResponse.from(product);
