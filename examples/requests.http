@@ -1,0 +1,117 @@
+# IntelliJ IDEA HTTP Client. Run with the application started and SQL scripts applied.
+@baseUrl = http://localhost:8081
+@article = 100001
+
+### Categories
+GET {{baseUrl}}/api/categories
+
+### Brands
+GET {{baseUrl}}/api/brands
+
+### Specifications
+GET {{baseUrl}}/api/specifications
+
+### Create smartphone (copy article from response into @article)
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+< ./smartphone.json
+
+### Read product
+GET {{baseUrl}}/api/products/{{article}}
+
+### All filters can be combined
+GET {{baseUrl}}/api/products?name=Demo&brand=DemoBrand&category=SMARTPHONE&minPrice=10000&maxPrice=50000&available=true&page=0&size=10
+
+### Update: full replacement, including specifications and cameras
+PUT {{baseUrl}}/api/products/{{article}}
+Content-Type: application/json
+
+< ./smartphone.json
+
+### Create tablet
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+< ./tablet.json
+
+### Create laptop
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+< ./laptop.json
+
+### Create headphones
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+< ./headphones.json
+
+### Create user
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+< ./user.json
+
+### Read user (no password/hash in response)
+GET {{baseUrl}}/api/users/customer@example.com
+
+### Filter users by role
+GET {{baseUrl}}/api/users?role=CUSTOMER
+
+### Update user; email cannot be changed
+PUT {{baseUrl}}/api/users/customer@example.com
+Content-Type: application/json
+
+{"name":"Новое имя","role":"MANAGER"}
+
+### Create brand
+POST {{baseUrl}}/api/brands
+Content-Type: application/json
+
+{"name":"NewBrand"}
+
+### Rename unused brand
+PUT {{baseUrl}}/api/brands/NewBrand
+Content-Type: application/json
+
+{"name":"RenamedBrand"}
+
+### Delete unused brand
+DELETE {{baseUrl}}/api/brands/RenamedBrand
+
+### Create an additional specification
+POST {{baseUrl}}/api/specifications
+Content-Type: application/json
+
+{"name":"color","valueType":"TEXT","unit":null}
+
+### Allow color for smartphones
+PUT {{baseUrl}}/api/categories/SMARTPHONE/specifications/color
+
+### List permitted characteristics
+GET {{baseUrl}}/api/categories/SMARTPHONE/specifications
+
+### Discount: updates all products. Catalogue writes are blocked until cancellation.
+POST {{baseUrl}}/api/discount
+Content-Type: application/json
+
+{"percent":10,"threads":3}
+
+### Discount status survives application restart
+GET {{baseUrl}}/api/discount
+
+### Restore original prices
+DELETE {{baseUrl}}/api/discount
+
+### Invalid range -> 400
+GET {{baseUrl}}/api/products?minPrice=100&maxPrice=10
+
+### Missing product -> 404
+GET {{baseUrl}}/api/products/2147483647
+
+### Delete product and its characteristics/cameras
+DELETE {{baseUrl}}/api/products/{{article}}
+
+### Delete user
+DELETE {{baseUrl}}/api/users/customer@example.com
