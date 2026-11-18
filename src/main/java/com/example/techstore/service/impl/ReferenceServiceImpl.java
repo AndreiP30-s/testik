@@ -4,6 +4,8 @@ import com.example.techstore.dto.ReferenceDtos.BrandDto;
 import com.example.techstore.dto.ReferenceDtos.CategoryDto;
 import com.example.techstore.dto.ReferenceDtos.CharacteristicDto;
 import com.example.techstore.exception.ConflictException;
+import com.example.techstore.exception.ErrorCode;
+import com.example.techstore.exception.InvalidCharacteristicException;
 import com.example.techstore.exception.NotFoundException;
 import com.example.techstore.model.catalog.CategoryCharacteristic;
 import com.example.techstore.model.catalog.CategoryCharacteristicId;
@@ -52,14 +54,15 @@ public class ReferenceServiceImpl implements ReferenceService {
     public BrandDto brand(String name) {
         return brands.findById(name)
                 .map(brand -> new BrandDto(brand.getName()))
-                .orElseThrow(() -> new NotFoundException("Бренд не найден: " + name));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BRAND_NOT_FOUND, "Бренд не найден: " + name));
     }
 
     @Transactional
     @Override
     public BrandDto createBrand(BrandDto request) {
         String name = request.name().strip();
-        if (brands.existsById(name)) throw new ConflictException("Бренд уже существует");
+        if (brands.existsById(name))
+            throw new ConflictException(ErrorCode.DUPLICATE_BRAND, "Бренд уже существует");
         brands.saveAndFlush(new com.example.techstore.model.catalog.Brand(name));
         return new BrandDto(name);
     }
@@ -67,11 +70,14 @@ public class ReferenceServiceImpl implements ReferenceService {
     @Transactional
     @Override
     public BrandDto renameBrand(String old, BrandDto request) {
-        if (!brands.existsById(old)) throw new NotFoundException("Бренд не найден");
+        if (!brands.existsById(old))
+            throw new NotFoundException(ErrorCode.BRAND_NOT_FOUND, "Бренд не найден");
         String name = request.name().strip();
         if (old.equals(name)) return new BrandDto(name);
         if (products.existsByBrandName(old))
-            throw new ConflictException("Нельзя переименовать используемый бренд");
+            throw new ConflictException(
+                    ErrorCode.BRAND_IN_USE,
+                    "Нельзя переименовать используемый бренд");
         BrandDto result = createBrand(request);
         brands.deleteById(old);
         brands.flush();
@@ -81,9 +87,10 @@ public class ReferenceServiceImpl implements ReferenceService {
     @Transactional
     @Override
     public void deleteBrand(String name) {
-        if (!brands.existsById(name)) throw new NotFoundException("Бренд не найден");
+        if (!brands.existsById(name))
+            throw new NotFoundException(ErrorCode.BRAND_NOT_FOUND, "Бренд не найден");
         if (products.existsByBrandName(name))
-            throw new ConflictException("Бренд используется товарами");
+            throw new ConflictException(ErrorCode.BRAND_IN_USE, "Бренд используется товарами");
         brands.deleteById(name);
         brands.flush();
     }
@@ -110,7 +117,8 @@ public class ReferenceServiceImpl implements ReferenceService {
     public CharacteristicDto createSpecification(CharacteristicDto request) {
         String name = request.name().strip();
         if (specifications.existsById(name))
-            throw new ConflictException("Характеристика уже существует");
+            throw new ConflictException(
+                    ErrorCode.DUPLICATE_CHARACTERISTIC, "Характеристика уже существует: " + name);
         Characteristic entity = new Characteristic();
         entity.setName(name);
         assign(entity, request);
@@ -123,11 +131,13 @@ public class ReferenceServiceImpl implements ReferenceService {
     public CharacteristicDto updateSpecification(String name, CharacteristicDto request) {
         Characteristic entity = requireSpecification(name);
         if (!name.equals(request.name().strip()))
-            throw new IllegalArgumentException("Имя характеристики — неизменяемый ключ");
+            throw new InvalidCharacteristicException(
+                    ErrorCode.CHARACTERISTIC_NAME_IMMUTABLE, "Имя характеристики нельзя изменить: " + name);
         if (!entity.getValueType().equals(request.valueType())
                 && (products.existsBySpecificationsIdSpecificationName(name)
                         || links.existsByIdSpecificationName(name)))
-            throw new ConflictException("Тип используемой характеристики менять нельзя");
+            throw new ConflictException(
+                    ErrorCode.CHARACTERISTIC_IN_USE, "Тип используемой характеристики менять нельзя: " + name);
         assign(entity, request);
         specifications.flush();
         return dto(entity);
@@ -139,7 +149,8 @@ public class ReferenceServiceImpl implements ReferenceService {
         Characteristic entity = requireSpecification(name);
         if (links.existsByIdSpecificationName(name)
                 || products.existsBySpecificationsIdSpecificationName(name))
-            throw new ConflictException("Характеристика используется");
+            throw new ConflictException(
+                    ErrorCode.CHARACTERISTIC_IN_USE, "Характеристика используется: " + name);
         specifications.delete(entity);
         specifications.flush();
     }
@@ -167,24 +178,30 @@ public class ReferenceServiceImpl implements ReferenceService {
     public void unlink(String code, String name) {
         requireCategory(code);
         CategoryCharacteristicId id = new CategoryCharacteristicId(code, name);
-        if (!links.existsById(id)) throw new NotFoundException("Связь не найдена");
+        if (!links.existsById(id))
+            throw new NotFoundException(
+                    ErrorCode.CHARACTERISTIC_LINK_NOT_FOUND, "Связь не найдена: " + code + " / " + name);
         if (ProductRules.required(com.example.techstore.model.product.ProductCategory.valueOf(code))
                 .contains(name))
-            throw new ConflictException("Характеристика обязательна для модели товара");
+            throw new ConflictException(
+                    ErrorCode.CHARACTERISTIC_REQUIRED, "Характеристика обязательна для категории " + code + ": " + name);
         if (products.existsBySpecificationsIdSpecificationName(name))
-            throw new ConflictException("Характеристика используется товарами");
+            throw new ConflictException(
+                    ErrorCode.CHARACTERISTIC_IN_USE, "Характеристика используется товарами: " + name);
         links.deleteById(id);
         links.flush();
     }
 
     private void requireCategory(String code) {
-        if (!categories.existsById(code)) throw new NotFoundException("Категория не найдена");
+        if (!categories.existsById(code))
+            throw new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND, "Категория не найдена");
     }
 
     private Characteristic requireSpecification(String name) {
         return specifications
                 .findById(name)
-                .orElseThrow(() -> new NotFoundException("Характеристика не найдена"));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.CHARACTERISTIC_NOT_FOUND, "Характеристика не найдена: " + name));
     }
 
     private CharacteristicDto dto(Characteristic entity) {
@@ -193,7 +210,8 @@ public class ReferenceServiceImpl implements ReferenceService {
 
     private void assign(Characteristic entity, CharacteristicDto request) {
         if (request.unit() != null && request.unit().isBlank())
-            throw new IllegalArgumentException("Единица не должна быть пустой");
+            throw new InvalidCharacteristicException(
+                    ErrorCode.INVALID_CHARACTERISTIC_UNIT, "Единица измерения не должна быть пустой");
         entity.setValueType(request.valueType());
         entity.setUnit(request.unit() == null ? null : request.unit().strip());
     }
