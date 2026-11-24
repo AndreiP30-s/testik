@@ -1,7 +1,10 @@
 package com.example.techstore.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.Paths;
 
 import org.springdoc.core.customizers.OpenApiCustomizer;
@@ -11,13 +14,15 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
+@SecurityScheme(name = "basicAuth", type = SecuritySchemeType.HTTP, scheme = "basic")
 @OpenAPIDefinition(
+        security = @SecurityRequirement(name = "basicAuth"),
         info =
                 @Info(
                         title = "TechStore REST API",
                         version = "1.0.0",
                         description =
-                                "**Добавить товар:** откройте «1. Товары», выберите «Добавить"
+                                "Войдите кнопкой Authorize, указав email и пароль. **Добавить товар:** откройте «1. Товары», выберите «Добавить"
                                     + " смартфон» или другую категорию, нажмите Try it out,"
                                     + " заполните название и цену, затем Execute. JSON вводить не"
                                     + " нужно. Проверьте значения характеристик перед сохранением."

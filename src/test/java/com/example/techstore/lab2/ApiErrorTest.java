@@ -31,6 +31,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -38,6 +39,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+@WithMockUser(roles = "ADMIN")
 class ApiErrorTest extends DatabaseFreeTest {
     private static final String DISCOUNT = """
             {"percent":10,"threads":2}
@@ -111,7 +113,7 @@ class ApiErrorTest extends DatabaseFreeTest {
 
     @Test
     void preservesAllowHeader() throws Exception {
-        expectError(mvc.perform(put("/api/discount")), 405, "METHOD_NOT_ALLOWED")
+        expectError(mvc.perform(put("/api/products")), 405, "METHOD_NOT_ALLOWED")
                 .andExpect(header().string(HttpHeaders.ALLOW, containsString("GET")));
     }
 

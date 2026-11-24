@@ -16,6 +16,9 @@ class OpenApiTest extends DatabaseFreeTest {
         mvc.perform(get("/v3/api-docs"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.info.title").value("TechStore REST API"))
+                .andExpect(jsonPath("$.components.securitySchemes.basicAuth.type").value("http"))
+                .andExpect(jsonPath("$.components.securitySchemes.basicAuth.scheme").value("basic"))
+                .andExpect(jsonPath("$.security[0].basicAuth").isArray())
                 .andExpect(jsonPath("$.paths['/api/products'].get").exists())
                 .andExpect(jsonPath("$.paths['/api/products'].post.responses['201']").exists())
                 .andExpect(jsonPath("$.paths['/api/users'].post").exists())
@@ -59,6 +62,8 @@ class OpenApiTest extends DatabaseFreeTest {
 
     @Test
     void servesInteractiveSwaggerPage() throws Exception {
+        mvc.perform(get("/swagger-ui.html")).andExpect(status().is3xxRedirection());
+        mvc.perform(get("/v3/api-docs/swagger-config")).andExpect(status().isOk());
         mvc.perform(get("/swagger-ui/index.html"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Swagger UI")));
