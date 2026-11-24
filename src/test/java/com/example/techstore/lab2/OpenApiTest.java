@@ -1,11 +1,11 @@
 package com.example.techstore.lab2;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -113,6 +113,7 @@ class OpenApiTest extends DatabaseFreeTest {
         "put, /api/brands/{name}, 400, 404, 409",
         "delete, /api/brands/{name}, 403, 404, 409",
         "post, /api/users, 400, 403, 409",
+        "delete, /api/users/{email}, 403, 404, 409",
         "put, /api/users/{email}/form, 400, 404, 409",
         "post, /api/discount, 400, 409, 500",
         "delete, /api/discount, 403, 409, 500",

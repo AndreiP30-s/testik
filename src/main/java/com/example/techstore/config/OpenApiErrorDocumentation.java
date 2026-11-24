@@ -111,7 +111,7 @@ public class OpenApiErrorDocumentation implements OpenApiCustomizer {
         errors(paths, user, GET, Map.of("400", INVALID_EMAIL, "404", USER_NOT_FOUND));
         errors(paths, user, DELETE, Map.of(
                 "400", INVALID_EMAIL, "404", USER_NOT_FOUND,
-                "409", "Пользователь связан с другими записями"));
+                "409", "У пользователя есть связанные заказы"));
         for (String path : List.of(users, users + "/form")) {
             errors(paths, path, POST, Map.of(
                     "400", "Некорректные данные для создания пользователя",

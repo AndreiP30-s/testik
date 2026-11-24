@@ -1,5 +1,6 @@
 package com.example.techstore.lab2;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -17,8 +18,11 @@ import com.example.techstore.model.product.ProductSpecification;
 import com.example.techstore.service.ProductService;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@ExtendWith(OutputCaptureExtension.class)
 @WithMockUser(roles = "ADMIN")
 class ProductApiTest extends DatabaseFreeTest {
     @Autowired ProductService service;
@@ -120,7 +125,7 @@ class ProductApiTest extends DatabaseFreeTest {
     }
 
     @Test
-    void createsProductAndChildKeys() throws Exception {
+    void createsProductAndChildKeys(CapturedOutput output) throws Exception {
         mvc.perform(post("/api/products").contentType("application/json").content(JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/products/100001"))
@@ -129,6 +134,7 @@ class ProductApiTest extends DatabaseFreeTest {
         ArgumentCaptor<Product> saved = ArgumentCaptor.forClass(Product.class);
         verify(products).saveAndFlush(saved.capture());
         assertEquals(5, saved.getValue().getSpecifications().size());
+        assertThat(output).contains("Создан товар: артикул=100001, название=Test headphones");
         assertTrue(
                 saved.getValue().getSpecifications().stream()
                         .allMatch(v -> v.getId().getProductArticle() == 100001));
