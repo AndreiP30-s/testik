@@ -1,6 +1,10 @@
 package com.example.techstore.lab2;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -58,6 +62,36 @@ class OpenApiTest extends DatabaseFreeTest {
                 .andExpect(
                         jsonPath("$.paths['/api/products/smartphones'].post.tags[0]")
                                 .value("1. Товары"));
+    }
+
+    @Test
+    void documentsCatalogFieldsAndApplicableErrorResponses() throws Exception {
+        String catalog = "$.paths['/api/products'].get";
+        String deletion = "$.paths['/api/products/{article}'].delete";
+        mvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(catalog + ".parameters[*].description").value(hasSize(8)))
+                .andExpect(jsonPath(catalog + ".parameters[*].description")
+                        .value(everyItem(not(isEmptyOrNullString()))))
+                .andExpect(jsonPath(catalog + ".responses['200']").exists())
+                .andExpect(jsonPath(catalog + ".responses['400']").exists())
+                .andExpect(jsonPath(catalog + ".responses['401'].headers['WWW-Authenticate']").exists())
+                .andExpect(jsonPath(catalog + ".responses['403']").doesNotExist())
+                .andExpect(jsonPath(catalog + ".responses['409']").doesNotExist())
+                .andExpect(jsonPath(deletion + ".parameters[0].description").isNotEmpty())
+                .andExpect(jsonPath(deletion + ".responses['204']").exists())
+                .andExpect(jsonPath(deletion + ".responses['401']").exists())
+                .andExpect(jsonPath(deletion + ".responses['403']").exists())
+                .andExpect(jsonPath(deletion + ".responses['404'].content['application/json'].schema['$ref']")
+                        .value("#/components/schemas/ErrorResponse"))
+                .andExpect(jsonPath(deletion + ".responses['409']").exists())
+                .andExpect(jsonPath(deletion + ".responses['500']").exists())
+                .andExpect(jsonPath(deletion + ".responses['503']").exists())
+                .andExpect(jsonPath("$.paths['/api/users'].get.responses['403']").exists())
+                .andExpect(jsonPath("$.components.schemas.ErrorResponse.properties.hint.description").isNotEmpty())
+                .andExpect(jsonPath("$.components.schemas.ProductResponse.properties.article.description").isNotEmpty())
+                .andExpect(jsonPath("$.components.schemas.PageResponseProductResponse.properties.totalElements.description")
+                        .isNotEmpty());
     }
 
     @Test
